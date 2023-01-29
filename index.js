@@ -26,21 +26,21 @@ async function loadPages() {
 // Start the server.
 (async function startServer() {
   await loadPages();
-  await http
+  http
     .createServer((req, res) => {
       // parse the request url into an object
       let reqUrl = url.parse(req.url);
       let route = reqUrl.pathname.replace('/', ''); //get the route
-      let responseData = staticFiles[route].data;
+      if (!route.includes('.html')) route += '.html';
       // handle success
-      if (responseData !== undefined) {
+      if (staticFiles[route] !== undefined) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        return res.end(responseData);
+        return res.end(staticFiles[route].data);
       }
       // handle not found
-      if (responseData === undefined) {
+      if (staticFiles[route] === undefined) {
         res.writeHead(404, { 'Content-Type': 'text/html' });
-        return res.end(staticFiles['404.html']);
+        return res.end(staticFiles['404.html'].data);
       }
     })
     .listen(8080);
